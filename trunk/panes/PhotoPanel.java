@@ -169,7 +169,6 @@ public class PhotoPanel extends javax.swing.JPanel implements Runnable {
       ImageIcon ic = new ImageIcon(im.data);
       label_photo.setIcon(ic);
     } catch (Exception ex) {
-      long i = System.currentTimeMillis();
       ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH);
       label_photo.setIcon(im);
       Photos.logger.log(Level.WARNING, "Could not read exif thumbnail from {0}", fileRecord.path);

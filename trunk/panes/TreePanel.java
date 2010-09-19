@@ -20,15 +20,17 @@ import javax.swing.tree.DefaultTreeModel;
  * @author lordovol
  */
 public abstract class TreePanel extends javax.swing.JPanel {
+
   private static final long serialVersionUID = 456567585858L;
   DefaultTreeModel treemodel = new DefaultTreeModel(null);
+  public final static String SELECTED_ALBUM = "selected album";
+  public final static String SELECTED_DATE = "selected date";
+  public final static String SELECTED_LIST = "selected list";
 
   public TreePanel() {
     initComponents();
   }
 
-
-  
   public abstract void populate(int count);
 
   protected abstract DefaultMutableTreeNode createTree() throws SQLException;
@@ -62,7 +64,6 @@ public abstract class TreePanel extends javax.swing.JPanel {
       .addComponent(scroll_tree, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
     );
   }// </editor-fold>//GEN-END:initComponents
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane scroll_tree;
   protected javax.swing.JTree tree;
@@ -72,4 +73,3 @@ public abstract class TreePanel extends javax.swing.JPanel {
     tree.setCellRenderer(renderer);
   }
 }
-

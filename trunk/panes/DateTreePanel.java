@@ -34,7 +34,7 @@ public class DateTreePanel extends TreePanel{
   private static final long serialVersionUID = 25324534535345L;
   Tree dateTree = new Tree();
   TreeDate treeDate;
-  public final static String SELECTED_DATE = "selected date";
+  
 
   /** Creates new form TreePanel */
   public DateTreePanel() {

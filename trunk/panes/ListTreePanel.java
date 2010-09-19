@@ -31,7 +31,7 @@ public class ListTreePanel extends TreePanel {
   public static final long serialVersionUID = 235345656456L;
   ArrayList<ListLeaf> listModel = new ArrayList<ListLeaf>();
   private ListLeaf selectedLeaf;
-  public final static String SELECTED_LIST = "selected list";
+  
 
   public ListTreePanel() {
     super();

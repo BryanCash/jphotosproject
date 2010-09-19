@@ -183,15 +183,10 @@ public class PreviewPanel extends javax.swing.JPanel {
   }
 
   public void addToList() {
-    int id = fileRecord.id;
-    String now = Tools.getNow();
-    Print print = new Print();
-    print.file_id = id;
-    Photos.curList.add(print);
-    Photos.logger.log(Level.INFO, "Photo {0} added to prints", fileRecord.path);
+   
     Photos p = (Photos) getTopLevelAncestor();
-    p.printsPanel.addPhoto(fileRecord, print);
-    Photos.isCurListSaved = false;
+    p.printsPanel.addPhoto(fileRecord);
+    
 
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
