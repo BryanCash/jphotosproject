@@ -208,6 +208,7 @@ public class Tools {
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
         f.id = rs.getInt("id");
+        f.album_id = rs.getInt("album_id");
         photos.add(f);
       }
       return photos;
@@ -411,8 +412,10 @@ public class Tools {
     fc.setApproveButtonText("Αποθήκευση");
     fc.showOpenDialog(null);
     File f = fc.getSelectedFile();
-    ArrayList<File> files = List.getListFiles();
-    Copier copier = new Copier(files, f);
+    if (f != null) {
+      ArrayList<File> files = List.getListFiles();
+      Copier copier = new Copier(files, f);
+    }
   }
 
   public static boolean copyfile(String srFile, String dtFile) throws FileNotFoundException, IOException {
@@ -458,14 +461,35 @@ public class Tools {
   }
 
   public static ArrayList<File> removeNullEntries(ArrayList<File> list) {
-   ArrayList<File> filteredList = new ArrayList<File>();
+    ArrayList<File> filteredList = new ArrayList<File>();
     for (Iterator<File> it = list.iterator(); it.hasNext();) {
       File file = it.next();
-      if(file!=null){
+      if (file != null) {
         filteredList.add(file);
       }
     }
-   return filteredList;
+    return filteredList;
+  }
+
+  public static ArrayList<FileRecord> getPhotosByAlbum(int id) {
+    ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
+    try {
+      String sql = "Select * from files WHERE album_id = " + id
+              + " ORDER BY created DESC";
+      ResultSet rs = Database.stmt.executeQuery(sql);
+      while (rs.next()) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
+        FileRecord f = new FileRecord(rs.getString("path"), cal);
+        f.id = rs.getInt("id");
+        f.album_id = rs.getInt("album_id");
+        photos.add(f);
+      }
+      return photos;
+    } catch (SQLException ex) {
+      Photos.logger.log(Level.SEVERE, null, ex);
+      return photos;
+    }
   }
 
   public static class ManagedImageBufferedImageFactory implements IBufferedImageFactory {

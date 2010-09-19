@@ -225,6 +225,40 @@
             </Property>
           </Properties>
         </Component>
+        <Component class="javax.swing.JButton" name="bt_album">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/jphotos/images/album.png"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="&#x39b;&#x3af;&#x3c3;&#x3c4;&#x3b1; &#x386;&#x3bb;&#x3bc;&#x3c0;&#x3bf;&#x3c5;&#x3bc;&#x3c2;"/>
+            <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+              <Color id="Hand Cursor"/>
+            </Property>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_albumActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButton2">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/jphotos/images/list.png"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="&#x391;&#x3c0;&#x3bf;&#x3b8;&#x3b7;&#x3ba;&#x3b5;&#x3c5;&#x3bc;&#x3ad;&#x3bd;&#x3b5;&#x3c2; &#x3bb;&#x3af;&#x3c3;&#x3c4;&#x3b5;&#x3c2;"/>
+            <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+              <Color id="Hand Cursor"/>
+            </Property>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator4">
         </Component>
         <Component class="javax.swing.JButton" name="bt_newList">
@@ -375,10 +409,7 @@
                     </Constraint>
                   </Constraints>
 
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-                    <Property name="columns" type="int" value="0"/>
-                    <Property name="rows" type="int" value="1"/>
-                  </Layout>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
                 </Container>
                 <Container class="jphotos.panes.PreviewPanel" name="previewPanel">
                   <Properties>
@@ -410,7 +441,7 @@
             </Container>
           </SubComponents>
         </Container>
-        <Component class="jphotos.panes.TreePanel" name="tree">
+        <Component class="jphotos.panes.DateTreePanel" name="tree">
           <Properties>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

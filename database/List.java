@@ -32,7 +32,7 @@ public class List extends Record {
   public void save() {
     String sql = "";
     if(this.id == 0) {
-    sql = "INSERT INTO lists (date) VALUES ('"+date+"')";
+    sql = "INSERT INTO lists (date) VALUES ('"+this.date+"')";
     }
     int i = query(sql);
     if(i>0){

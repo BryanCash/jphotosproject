@@ -12,15 +12,19 @@ package jphotos.panes;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Image;
+import java.awt.event.MouseAdapter;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import jphotos.Photos;
+import jphotos.database.Album;
 import jphotos.database.FileRecord;
 import jphotos.tools.Tools;
+import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.common.byteSources.ByteSourceFile;
 import org.apache.sanselan.formats.jpeg.JpegImageParser;
 import org.apache.sanselan.formats.tiff.JpegImageData;
@@ -31,7 +35,7 @@ import org.apache.sanselan.formats.tiff.TiffImageMetadata;
  *
  * @author lordovol
  */
-public class PhotoPanel extends javax.swing.JPanel {
+public class PhotoPanel extends javax.swing.JPanel implements Runnable {
 
   public static final int gridSize = 160;
   public static final long serialVersionUID = 235346345645L;
@@ -39,7 +43,8 @@ public class PhotoPanel extends javax.swing.JPanel {
   public static final Color BORDER_MEDIUM_COLOR = Color.LIGHT_GRAY;
   public static final int BORDER_WIDTH = 3;
   public static final int ICON_WIDTH = 160;
-  private FileRecord fileRecord;
+  private ScrollableFlowPanel photoPanel;
+  public FileRecord fileRecord;
   private int index;
 
   /** Creates new form PhotoPanel */
@@ -47,29 +52,11 @@ public class PhotoPanel extends javax.swing.JPanel {
     initComponents();
   }
 
-  PhotoPanel(FileRecord fileRecord, int index) {
-    try {
-      this.fileRecord = fileRecord;
-      this.index = index;
-      initComponents();
-      label_name.setText(fileRecord.toString());
-      label_name.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-      JpegImageParser parser = new JpegImageParser();
-      ByteSourceFile bytesource = new ByteSourceFile(new File(fileRecord.path));
-      HashMap params = new HashMap();
-      TiffImageMetadata d = parser.getExifMetadata(bytesource, params);
-      TiffDirectory dir = d.findDirectory(TiffImageMetadata.DIRECTORY_TYPE_SUB);
-      JpegImageData im = dir.getJpegImageData();
-      ImageIcon ic = new ImageIcon(im.data);
-      label_photo.setIcon(ic);
-    } catch (Exception ex) {
-      long i = System.currentTimeMillis();
-      ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH);
-      label_photo.setIcon(im);
-      Photos.logger.log(Level.WARNING, "Could not read exif thumbnail from {0}", fileRecord.path);
-
-    }
-
+  PhotoPanel(ScrollableFlowPanel photoPanel, FileRecord fileRecord, int index) {
+    this.fileRecord = fileRecord;
+    this.index = index;
+    this.photoPanel = photoPanel;
+    initComponents();
   }
 
   /** This method is called from within the constructor to
@@ -81,17 +68,18 @@ public class PhotoPanel extends javax.swing.JPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    label_name = new javax.swing.JLabel();
+    label_album = new javax.swing.JLabel();
     label_photo = new javax.swing.JLabel();
+    check = new javax.swing.JCheckBox();
 
     setBackground(new java.awt.Color(255, 255, 255));
     setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-    label_name.setBackground(new java.awt.Color(255, 255, 255));
-    label_name.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-    label_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    label_name.setText("jLabel1");
-    label_name.setOpaque(true);
+    label_album.setBackground(new java.awt.Color(255, 255, 255));
+    label_album.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+    label_album.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+    label_album.setText("jLabel1");
+    label_album.setOpaque(true);
 
     label_photo.setBorder(javax.swing.BorderFactory.createEmptyBorder(3, 3, 3, 3));
     label_photo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -107,6 +95,8 @@ public class PhotoPanel extends javax.swing.JPanel {
       }
     });
 
+    check.setOpaque(false);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -114,17 +104,22 @@ public class PhotoPanel extends javax.swing.JPanel {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(label_photo, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-          .addComponent(label_name, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(label_album, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(check))
+          .addComponent(label_photo, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(label_photo, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(label_name)
+        .addComponent(label_photo, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+        .addGap(6, 6, 6)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+          .addComponent(label_album)
+          .addComponent(check))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -154,7 +149,34 @@ public class PhotoPanel extends javax.swing.JPanel {
     selectPhoto();
   }//GEN-LAST:event_label_photoMouseReleased
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel label_name;
+  public javax.swing.JCheckBox check;
+  private javax.swing.JLabel label_album;
   private javax.swing.JLabel label_photo;
   // End of variables declaration//GEN-END:variables
+
+  public void run() {
+    try {
+      label_photo.setToolTipText(fileRecord.toString());
+      String album = new Album(fileRecord.album_id).toString();
+      label_album.setText(album.equals("") ? " " : album);
+      label_album.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+      JpegImageParser parser = new JpegImageParser();
+      ByteSourceFile bytesource = new ByteSourceFile(new File(fileRecord.path));
+      HashMap params = new HashMap();
+      TiffImageMetadata d = parser.getExifMetadata(bytesource, params);
+      TiffDirectory dir = d.findDirectory(TiffImageMetadata.DIRECTORY_TYPE_SUB);
+      JpegImageData im = dir.getJpegImageData();
+      ImageIcon ic = new ImageIcon(im.data);
+      label_photo.setIcon(ic);
+    } catch (Exception ex) {
+      long i = System.currentTimeMillis();
+      ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH);
+      label_photo.setIcon(im);
+      Photos.logger.log(Level.WARNING, "Could not read exif thumbnail from {0}", fileRecord.path);
+    } finally{
+      photoPanel.add(this);
+      photoPanel.revalidate();
+      photoPanel.repaint();
+    }
+  }
 }

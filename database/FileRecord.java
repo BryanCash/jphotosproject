@@ -18,11 +18,12 @@ public class FileRecord extends Record {
 
   public int id;
   public String path;
-  public long created;
-  private final int year;
-  private final int month;
-  private final int date;
-  public String inserted;
+  public long created = 0L;
+  private int year = 0;
+  private int month = 0;
+  private int date = 0;
+  public String inserted = "";
+  public int album_id = 0;
 
   public FileRecord(String path, Calendar created) {
     this.path = path;
@@ -31,22 +32,17 @@ public class FileRecord extends Record {
       this.year = created.get(Calendar.YEAR);
       this.month = created.get(Calendar.MONTH) + 1;
       this.date = created.get(Calendar.DATE);
-    } else {
-      this.created = 0L;
-      this.year = 0;
-      this.month = 0;
-      this.date = 0;
     }
   }
 
   public void save() {
     String sql;
     if (this.id == 0) {
-      sql = "INSERT INTO files (path,created,year,month,date,`inserted`) VALUES "
-              + "('" + this.path + "'," + this.created + "," + year + "," + month + ", " + date + ", '" + Tools.getNow() + "' )";
+      sql = "INSERT INTO files (path,created,year,month,date,`inserted`,`album_id`) VALUES "
+              + "('" + this.path + "'," + this.created + "," + year + "," + month + ", " + date + ", '" + Tools.getNow() + "',"+this.album_id+" )";
     } else {
       sql = "UPDATE files SET path = '" + this.path + "', created = " + this.created
-              + ", year =" + this.year + ", month = " + this.month + ", date = " + this.date;
+              + ", year =" + this.year + ", month = " + this.month + ", date = " + this.date + ", album_id ="+this.album_id +" WHERE id="+this.id;
     }
     int i = query(sql);
     if (i > 0) {

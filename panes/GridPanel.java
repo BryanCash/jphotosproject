@@ -10,12 +10,26 @@
  */
 package jphotos.panes;
 
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import jphotos.database.FileRecord;
+import jphotos.tools.Tools;
 
 /**
  *
@@ -25,11 +39,12 @@ public class GridPanel extends javax.swing.JPanel {
 
   public static final long serialVersionUID = 23534634654764L;
   public ScrollableFlowPanel photoPanel;
- 
 
   /** Creates new form GridPanel */
   public GridPanel() {
     initComponents();
+
+
   }
 
   /** This method is called from within the constructor to
@@ -61,18 +76,75 @@ public class GridPanel extends javax.swing.JPanel {
     panel.setOpaque(false);
     photoPanel.setOpaque(false);
     panel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-    add(panel);
+    add(panel, BorderLayout.CENTER);
+    addComponents();
+
     //photoPanel.setLayout(new GridLayout((datePhotos.size()/4) + 1,4));
     photoPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
     int count = 0;
     for (Iterator<FileRecord> it = datePhotos.iterator(); it.hasNext();) {
       FileRecord fileRecord = it.next();
-      PhotoPanel p = new PhotoPanel(fileRecord,count);
-      photoPanel.add(p);
+      PhotoPanel p = new PhotoPanel(photoPanel, fileRecord, count);
+      Thread t = new Thread(p);
+      t.start();
       count++;
-    }
+     }
     revalidate();
     repaint();
+  }
+
+  private void addComponents() {
+    JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    final JCheckBox checkAll = new JCheckBox("Επιλογή όλων");
+    south.add(checkAll);
+    checkAll.addMouseListener(new MouseAdapter() {
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        checkPhotos(checkAll.isSelected());
+      }
+    });
+    ImageIcon albumIcon = new ImageIcon(getClass().getResource("/jphotos/images/photo_icon.png"));
+    final JButton addToAlbum = new JButton(albumIcon);
+    addToAlbum.setToolTipText("Προσθήκη σε album");
+    addToAlbum.addActionListener(new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        addToAlbum();
+      }
+    });
+    south.add(addToAlbum);
+    add(south, BorderLayout.SOUTH);
+  }
+
+  private void addToAlbum() {
+    ArrayList<PhotoPanel> photos = new ArrayList<PhotoPanel>();
+    Component[] comps = photoPanel.getComponents();
+    for (int i = 0; i < comps.length; i++) {
+      Component comp = comps[i];
+      if (comp instanceof PhotoPanel) {
+        PhotoPanel p = (PhotoPanel) comp;
+        if (p.check.isSelected()) {
+          photos.add(p);
+        }
+      }
+    }
+    if (photos.size() > 0) {
+      AddToAlbumPanel alb = new AddToAlbumPanel(photos);
+    } else {
+      Tools.message("Προσθήκη σε Άλμπουμ", "Δεν έχετε επιλέξει κάποια φωτογραφία");
+    }
+  }
+
+  private void checkPhotos(boolean selected) {
+    Component[] photos = photoPanel.getComponents();
+    for (int i = 0; i < photos.length; i++) {
+      Component ph = photos[i];
+      if (ph instanceof PhotoPanel) {
+        PhotoPanel p = (PhotoPanel) ph;
+        p.check.setSelected(selected);
+      }
+    }
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   // End of variables declaration//GEN-END:variables

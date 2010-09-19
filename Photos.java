@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import jphotos.objects.DateTreeCellRenderer;
@@ -34,7 +35,12 @@ import jphotos.database.Database;
 import jphotos.database.FileRecord;
 import jphotos.database.FileTreeRecord;
 import jphotos.database.Print;
+import jphotos.objects.AlbumLeaf;
+import jphotos.objects.AlbumTreeCellRenderer;
+import jphotos.panes.AlbumTreePanel;
 import jphotos.panes.PhotoPanel;
+import jphotos.panes.DateTreePanel;
+import jphotos.panes.ListTreePanel;
 import jphotos.panes.TreePanel;
 import jphotos.tools.Importer;
 import jphotos.tools.Options;
@@ -56,6 +62,7 @@ public class Photos extends javax.swing.JFrame {
   public static ArrayList<Print> curList = new ArrayList<Print>();
   public static boolean isCurListSaved = false;
   public static int curListId = 0;
+  private int mainSplitPosition;
 
   /** Creates new form photos */
   public Photos() {
@@ -84,20 +91,10 @@ public class Photos extends javax.swing.JFrame {
       }
     }
     initComponents();
-    tree.setCellRenderer(new DateTreeCellRenderer());
     tree.populate(0);
     setLocationRelativeTo(null);
     setExtendedState(MAXIMIZED_BOTH);
-    tree.addPropertyChangeListener(new PropertyChangeListener() {
-
-      public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(TreePanel.SELECTED_DATE)) {
-          TreeDate newDate = (TreeDate) evt.getNewValue();
-          ArrayList<FileRecord> datePhotos = Tools.getPhotosByDate(newDate);
-          gridPanel.setPhotos(datePhotos);
-        }
-      }
-    });
+    addTreeListener(tree);
 
     KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
     manager.addKeyEventDispatcher(new MyDispatcher());
@@ -136,6 +133,8 @@ public class Photos extends javax.swing.JFrame {
     Bt_allPhotos = new javax.swing.JButton();
     bt_newPhotos = new javax.swing.JButton();
     sp_count = new javax.swing.JSpinner();
+    bt_album = new javax.swing.JButton();
+    jButton2 = new javax.swing.JButton();
     jSeparator4 = new javax.swing.JToolBar.Separator();
     bt_newList = new javax.swing.JButton();
     bt_saveList = new javax.swing.JButton();
@@ -148,7 +147,7 @@ public class Photos extends javax.swing.JFrame {
     split_top = new javax.swing.JSplitPane();
     gridPanel = new jphotos.panes.GridPanel();
     previewPanel = new jphotos.panes.PreviewPanel();
-    tree = new jphotos.panes.TreePanel();
+    tree = new jphotos.panes.DateTreePanel();
     menubar = new javax.swing.JMenuBar();
     m_photos = new javax.swing.JMenu();
     m_insert = new javax.swing.JMenuItem();
@@ -238,6 +237,32 @@ public class Photos extends javax.swing.JFrame {
     sp_count.setMaximumSize(new java.awt.Dimension(50, 40));
     sp_count.setMinimumSize(new java.awt.Dimension(63, 40));
     toolbar.add(sp_count);
+
+    bt_album.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jphotos/images/album.png"))); // NOI18N
+    bt_album.setToolTipText("Λίστα Άλμπουμς");
+    bt_album.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    bt_album.setFocusable(false);
+    bt_album.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    bt_album.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    bt_album.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        bt_albumActionPerformed(evt);
+      }
+    });
+    toolbar.add(bt_album);
+
+    jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jphotos/images/list.png"))); // NOI18N
+    jButton2.setToolTipText("Αποθηκευμένες λίστες");
+    jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    jButton2.setFocusable(false);
+    jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2ActionPerformed(evt);
+      }
+    });
+    toolbar.add(jButton2);
     toolbar.add(jSeparator4);
 
     bt_newList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jphotos/images/new.png"))); // NOI18N
@@ -314,7 +339,7 @@ public class Photos extends javax.swing.JFrame {
 
     gridPanel.setBackground(new java.awt.Color(255, 255, 255));
     gridPanel.setFocusable(false);
-    gridPanel.setLayout(new java.awt.GridLayout(1, 0));
+    gridPanel.setLayout(new java.awt.BorderLayout());
     split_top.setLeftComponent(gridPanel);
 
     previewPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -506,12 +531,57 @@ public class Photos extends javax.swing.JFrame {
   }//GEN-LAST:event_m_diskActionPerformed
 
   private void bt_newPhotosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_newPhotosActionPerformed
-    tree.populate((Integer)sp_count.getValue());
+    DateTreePanel date = new DateTreePanel();
+    date.populate((Integer) sp_count.getValue());
+    mainSplitPosition = split_main.getDividerLocation();
+    split_main.setLeftComponent(date);
+    split_main.setDividerLocation(mainSplitPosition);
+    addTreeListener(date);
   }//GEN-LAST:event_bt_newPhotosActionPerformed
 
+  private void addTreeListener(TreePanel tree) {
+    tree.addPropertyChangeListener(new PropertyChangeListener() {
+
+      public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(DateTreePanel.SELECTED_DATE)) {
+          TreeDate newDate = (TreeDate) evt.getNewValue();
+          ArrayList<FileRecord> datePhotos = Tools.getPhotosByDate(newDate);
+          gridPanel.setPhotos(datePhotos);
+        } else if (evt.getPropertyName().equals(AlbumTreePanel.SELECTED_ALBUM)) {
+          AlbumLeaf alb = (AlbumLeaf) evt.getNewValue();
+          ArrayList<FileRecord> albumPhotos = Tools.getPhotosByAlbum(alb.id);
+          gridPanel.setPhotos(albumPhotos);
+        }
+      }
+    });
+  }
+
   private void Bt_allPhotosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Bt_allPhotosActionPerformed
-     tree.populate(0);
+    DateTreePanel date = new DateTreePanel();
+    date.populate(0);
+    mainSplitPosition = split_main.getDividerLocation();
+    split_main.setLeftComponent(date);
+    split_main.setDividerLocation(mainSplitPosition);
+    addTreeListener(date);
   }//GEN-LAST:event_Bt_allPhotosActionPerformed
+
+  private void bt_albumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_albumActionPerformed
+    AlbumTreePanel album = new AlbumTreePanel();
+    album.populate(0);
+    mainSplitPosition = split_main.getDividerLocation();
+    split_main.setLeftComponent(album);
+    split_main.setDividerLocation(mainSplitPosition);
+    addTreeListener(album);
+  }//GEN-LAST:event_bt_albumActionPerformed
+
+  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    ListTreePanel list = new ListTreePanel();
+    list.populate(0);
+    mainSplitPosition = split_main.getDividerLocation();
+    split_main.setLeftComponent(list);
+    split_main.setDividerLocation(mainSplitPosition);
+    addTreeListener(list);
+  }//GEN-LAST:event_jButton2ActionPerformed
 
   private class MyDispatcher implements KeyEventDispatcher {
 
@@ -520,10 +590,10 @@ public class Photos extends javax.swing.JFrame {
       if (evt.getID() == KeyEvent.KEY_PRESSED) {
       } else if (evt.getID() == KeyEvent.KEY_RELEASED) {
         if (evt.getKeyCode() == KeyEvent.VK_RIGHT) {
-          if(selectedIndex==-1){
+          if (selectedIndex == -1) {
             return false;
           }
-          if (selectedIndex < gridPanel.photoPanel.getComponentCount()-1) {
+          if (selectedIndex < gridPanel.photoPanel.getComponentCount() - 1) {
             PhotoPanel p = (PhotoPanel) gridPanel.photoPanel.getComponent(selectedIndex + 1);
             p.selectPhoto();
           }
@@ -552,6 +622,7 @@ public class Photos extends javax.swing.JFrame {
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   public javax.swing.JButton Bt_allPhotos;
+  public javax.swing.JButton bt_album;
   public javax.swing.JButton bt_flashDisk;
   public javax.swing.JButton bt_newList;
   public javax.swing.JButton bt_newPhotos;
@@ -560,6 +631,7 @@ public class Photos extends javax.swing.JFrame {
   public javax.swing.JButton bt_update;
   public jphotos.panes.GridPanel gridPanel;
   public javax.swing.JButton jButton1;
+  public javax.swing.JButton jButton2;
   public javax.swing.JToolBar.Separator jSeparator1;
   public javax.swing.JToolBar.Separator jSeparator2;
   public javax.swing.JPopupMenu.Separator jSeparator3;
@@ -580,12 +652,12 @@ public class Photos extends javax.swing.JFrame {
   public javax.swing.JSplitPane split_right;
   public javax.swing.JSplitPane split_top;
   public javax.swing.JToolBar toolbar;
-  public jphotos.panes.TreePanel tree;
+  public jphotos.panes.DateTreePanel tree;
   // End of variables declaration//GEN-END:variables
 
   private void setDividers() {
     split_main.setDividerLocation(getWidth() * 15 / 100);
-    split_right.setDividerLocation(getHeight() * 60 / 100);
+    split_right.setDividerLocation(getHeight() * 75 / 100);
     split_top.setDividerLocation((getWidth() - tree.getWidth()) * 40 / 100);
   }
 
