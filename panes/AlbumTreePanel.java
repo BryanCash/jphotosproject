@@ -33,7 +33,6 @@ public class AlbumTreePanel extends TreePanel {
   public static final long serialVersionUID = 235345656456L;
   ArrayList<AlbumLeaf> albumModel = new ArrayList<AlbumLeaf>();
   private AlbumLeaf selectedLeaf;
-  public final static String SELECTED_ALBUM = "selected album";
 
   public AlbumTreePanel() {
     super();

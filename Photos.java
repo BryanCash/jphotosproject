@@ -37,6 +37,7 @@ import jphotos.database.FileTreeRecord;
 import jphotos.database.Print;
 import jphotos.objects.AlbumLeaf;
 import jphotos.objects.AlbumTreeCellRenderer;
+import jphotos.objects.ListLeaf;
 import jphotos.panes.AlbumTreePanel;
 import jphotos.panes.PhotoPanel;
 import jphotos.panes.DateTreePanel;
@@ -543,14 +544,20 @@ public class Photos extends javax.swing.JFrame {
     tree.addPropertyChangeListener(new PropertyChangeListener() {
 
       public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(DateTreePanel.SELECTED_DATE)) {
+        if (evt.getPropertyName().equals(TreePanel.SELECTED_DATE)) {
           TreeDate newDate = (TreeDate) evt.getNewValue();
           ArrayList<FileRecord> datePhotos = Tools.getPhotosByDate(newDate);
           gridPanel.setPhotos(datePhotos);
-        } else if (evt.getPropertyName().equals(AlbumTreePanel.SELECTED_ALBUM)) {
+        } else if (evt.getPropertyName().equals(TreePanel.SELECTED_ALBUM)) {
           AlbumLeaf alb = (AlbumLeaf) evt.getNewValue();
           ArrayList<FileRecord> albumPhotos = Tools.getPhotosByAlbum(alb.id);
           gridPanel.setPhotos(albumPhotos);
+        } else if (evt.getPropertyName().equals(TreePanel.SELECTED_LIST)) {
+          ListLeaf list = (ListLeaf) evt.getNewValue();
+          ArrayList<FileRecord> listPhotos = Tools.getPhotosByList(list.id);
+          bt_newListActionPerformed(null);
+          printsPanel.addPhotos(listPhotos);
+          isCurListSaved = true;
         }
       }
     });

@@ -11,11 +11,16 @@
 package jphotos.panes;
 
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import jphotos.Photos;
 import jphotos.database.FileRecord;
 import jphotos.database.Print;
+import jphotos.tools.Tools;
 
 /**
  *
@@ -64,13 +69,27 @@ public class PrintsPanel extends javax.swing.JPanel {
     );
   }// </editor-fold>//GEN-END:initComponents
 
-  void addPhoto(FileRecord fileRecord, Print print) {
+  public void addPhoto(FileRecord fileRecord) {
     this.fileRecord = fileRecord;
+    int id = fileRecord.id;
+    String now = Tools.getNow();
+    Print print = new Print();
+    print.file_id = id;
+    Photos.curList.add(print);
+    Photos.logger.log(Level.INFO, "Photo {0} added to prints", fileRecord.path);
+    Photos.isCurListSaved = false;
     this.print = print;
     PhotoPanelThumb p = new PhotoPanelThumb(photoPanel, fileRecord, print);
     photoPanel.add(p);
     revalidate();
     repaint();
+  }
+
+  public void addPhotos(ArrayList<FileRecord> photos){
+    for (Iterator<FileRecord> it = photos.iterator(); it.hasNext();) {
+      FileRecord f = it.next();
+      addPhoto(f);
+    }
   }
 
   public void clearPrints() {

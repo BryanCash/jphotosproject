@@ -492,6 +492,26 @@ public class Tools {
     }
   }
 
+  public static ArrayList<FileRecord> getPhotosByList(int id) {
+    ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
+ try {
+      String sql = "SELECT  files.path, files.year,files.month,files.date, lists.id FROM files JOIN prints ON "
+              + "prints.file_id = files.id JOIN lists ON lists.id = prints.list_id WHERE lists.id = " + id;
+      ResultSet rs = Database.stmt.executeQuery(sql);
+      while (rs.next()) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
+        FileRecord f = new FileRecord(rs.getString("path"), cal);
+        f.id = rs.getInt("id");
+        photos.add(f);
+      }
+      return photos;
+    } catch (SQLException ex) {
+      Photos.logger.log(Level.SEVERE, null, ex);
+      return photos;
+    }
+  }
+
   public static class ManagedImageBufferedImageFactory implements IBufferedImageFactory {
 
     public BufferedImage getColorBufferedImage(int width, int height,
