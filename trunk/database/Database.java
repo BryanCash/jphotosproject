@@ -43,13 +43,16 @@ public class Database {
       Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:" + Options.USER_DIR + "/" + db + ".db");
       stmt = conn.createStatement();
-      String files = "CREATE TABLE `files` ( `id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL,`path` VARCHAR UNIQUE  NOT NULL ,`created` REAL,`year`INTEGER, `month` INTEGER, `date` INTEGER,`inserted` VARCHAR)";
+      String files = "CREATE TABLE `files` ( `id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL,`path` VARCHAR UNIQUE  NOT NULL ,`created` REAL,`year`INTEGER, `month` INTEGER, `date` INTEGER,`inserted` VARCHAR,`album_id` INTEGER DEFAULT 0)";
       stmt.executeUpdate(files);
+      String albums ="CREATE  TABLE `albums` (`id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , `album` VARCHAR)";
+      stmt.executeUpdate(albums);
       String filetree = "CREATE TABLE `filetree` (`path` VARCHAR PRIMARY KEY  NOT NULL ,`subdirs` INTEGER DEFAULT 0 ,`files` INTEGER DEFAULT 0 )";
       stmt.executeUpdate(filetree);
       String prints = "CREATE TABLE `prints` (`id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , `file_id` INTEGER NOT NULL , `list_id` INTEGER)";
       stmt.executeUpdate(prints);
       String lists = "CREATE TABLE `lists` (`id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , `date` VARCHAR)";
+      stmt.executeUpdate(lists);
       String options = "CREATE TABLE `options` (`root` VARCHAR)";
       stmt.executeUpdate(options);
       String ins = "INSERT INTO `options` (`root`) VALUES ('') ";
