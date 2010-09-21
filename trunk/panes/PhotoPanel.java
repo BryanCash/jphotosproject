@@ -157,8 +157,7 @@ public class PhotoPanel extends javax.swing.JPanel implements Runnable {
   public void run() {
     try {
       label_photo.setToolTipText(fileRecord.toString());
-      String album = new Album(fileRecord.album_id).toString();
-      label_album.setText(album.equals("") ? " " : album);
+      label_album.setText(fileRecord.album);
       label_album.setBorder(BorderFactory.createLineBorder(Color.BLACK));
       JpegImageParser parser = new JpegImageParser();
       ByteSourceFile bytesource = new ByteSourceFile(new File(fileRecord.path));
@@ -169,7 +168,7 @@ public class PhotoPanel extends javax.swing.JPanel implements Runnable {
       ImageIcon ic = new ImageIcon(im.data);
       label_photo.setIcon(ic);
     } catch (Exception ex) {
-      ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH);
+      ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH, this);
       label_photo.setIcon(im);
       Photos.logger.log(Level.WARNING, "Could not read exif thumbnail from {0}", fileRecord.path);
     } finally{

@@ -26,6 +26,7 @@ public abstract class TreePanel extends javax.swing.JPanel {
   public final static String SELECTED_ALBUM = "selected album";
   public final static String SELECTED_DATE = "selected date";
   public final static String SELECTED_LIST = "selected list";
+  public final static String DELETED_LIST = "deleted list";
 
   public TreePanel() {
     initComponents();

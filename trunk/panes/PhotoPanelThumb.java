@@ -42,6 +42,7 @@ public class PhotoPanelThumb extends javax.swing.JPanel {
   public static final Color BORDER_HIGHLIGHT_COLOR = Color.BLACK;
   public static final int BORDER_WIDTH = 0;
   public static final int ICON_WIDTH = 60;
+  public static final String THUMB_REMOVED = "thumb removed";
   private FileRecord fileRecord;
   private Print print;
   private Image image;
@@ -80,7 +81,7 @@ public class PhotoPanelThumb extends javax.swing.JPanel {
       //label_photo.setIcon(new ImageIcon(ic));
     } catch (Exception ex) {
       long i = System.currentTimeMillis();
-      ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH);
+      ImageIcon im = Tools.getImage(fileRecord, ICON_WIDTH, this);
       image = im.getImage();
       //label_photo.setIcon(im);
       Photos.logger.log(Level.WARNING, "Could not read exif thumbnail from {0}", fileRecord.path);
@@ -177,6 +178,7 @@ public class PhotoPanelThumb extends javax.swing.JPanel {
       photoPanel.revalidate();
       photoPanel.repaint();
       Photos.isCurListSaved = false;
+      firePropertyChange(THUMB_REMOVED, null, null);
     }
 
   }//GEN-LAST:event_bt_deleteActionPerformed
