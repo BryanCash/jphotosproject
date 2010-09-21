@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import jphotos.objects.DateObj;
 import jphotos.objects.TreeDate;
 import jphotos.Photos;
@@ -49,6 +50,7 @@ import jphotos.database.FileRecord;
 import jphotos.database.FileTreeRecord;
 import jphotos.database.List;
 import jphotos.database.Print;
+import jphotos.panes.PhotoPanel;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.SanselanConstants;
@@ -199,7 +201,7 @@ public class Tools {
   public static ArrayList<FileRecord> getPhotosByDate(TreeDate date) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
     try {
-      String sql = "Select * from files WHERE year = " + date.year
+      String sql = "Select files.*, albums.album AS album  from files LEFT JOIN albums ON albums.id = files.album_id WHERE year = " + date.year
               + " AND month = " + date.month + " AND date = " + date.date
               + " ORDER BY created DESC";
       ResultSet rs = Database.stmt.executeQuery(sql);
@@ -209,6 +211,7 @@ public class Tools {
         FileRecord f = new FileRecord(rs.getString("path"), cal);
         f.id = rs.getInt("id");
         f.album_id = rs.getInt("album_id");
+        f.album = rs.getString("album");
         photos.add(f);
       }
       return photos;
@@ -474,7 +477,7 @@ public class Tools {
   public static ArrayList<FileRecord> getPhotosByAlbum(int id) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
     try {
-      String sql = "Select * from files WHERE album_id = " + id
+      String sql = "Select files.* ,albums.album AS album from files join albums on albums.id = files.album_id WHERE album_id = " + id
               + " ORDER BY created DESC";
       ResultSet rs = Database.stmt.executeQuery(sql);
       while (rs.next()) {
@@ -482,7 +485,8 @@ public class Tools {
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
         f.id = rs.getInt("id");
-        f.album_id = rs.getInt("album_id");
+        f.album = rs.getString("album");
+        f.album_id = id;
         photos.add(f);
       }
       return photos;
@@ -495,14 +499,14 @@ public class Tools {
   public static ArrayList<FileRecord> getPhotosByList(int id) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
  try {
-      String sql = "SELECT  files.path, files.year,files.month,files.date, lists.id FROM files JOIN prints ON "
+      String sql = "SELECT  files.id AS file_id, files.path, files.year,files.month,files.date, lists.id FROM files JOIN prints ON "
               + "prints.file_id = files.id JOIN lists ON lists.id = prints.list_id WHERE lists.id = " + id;
       ResultSet rs = Database.stmt.executeQuery(sql);
       while (rs.next()) {
         Calendar cal = Calendar.getInstance();
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
-        f.id = rs.getInt("id");
+        f.id = rs.getInt("file_id");
         photos.add(f);
       }
       return photos;
@@ -529,9 +533,9 @@ public class Tools {
     }
   }
 
-  public static ImageIcon getImage(FileRecord fileRecord, int width) {
-    int w = new ImageIcon(fileRecord.path).getImage().getWidth(null);
-    int h = new ImageIcon(fileRecord.path).getImage().getHeight(null);
+  public static ImageIcon getImage(FileRecord fileRecord, int width, JPanel pp) {
+    int w = new ImageIcon(fileRecord.path).getImage().getWidth(pp);
+    int h = new ImageIcon(fileRecord.path).getImage().getHeight(pp);
     Image icon = new ImageIcon(fileRecord.path).getImage().getScaledInstance(width, width * h / w, Image.SCALE_SMOOTH);
     return new ImageIcon(icon);
   }

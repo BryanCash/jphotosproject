@@ -11,6 +11,8 @@
 package jphotos.panes;
 
 import java.awt.FlowLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -81,6 +83,15 @@ public class PrintsPanel extends javax.swing.JPanel {
     this.print = print;
     PhotoPanelThumb p = new PhotoPanelThumb(photoPanel, fileRecord, print);
     photoPanel.add(p);
+    p.addPropertyChangeListener(new PropertyChangeListener() {
+
+      public void propertyChange(PropertyChangeEvent evt) {
+        if(evt.getPropertyName().equals(PhotoPanelThumb.THUMB_REMOVED)){
+          Photos photos = (Photos) getTopLevelAncestor();
+          photos.tree.populate(0);
+        }
+      }
+    });
     revalidate();
     repaint();
   }

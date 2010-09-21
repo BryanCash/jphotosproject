@@ -490,6 +490,10 @@ public class Photos extends javax.swing.JFrame {
   private void bt_saveListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_saveListActionPerformed
     if (curList.size() > 0 && !isCurListSaved) {
       Tools.saveList();
+      if(split_main.getLeftComponent() instanceof ListTreePanel){
+        ListTreePanel treePanel = (ListTreePanel) split_main.getLeftComponent();
+        treePanel.populate(0);
+      }
     } else {
       Tools.message("Σώσιμο λίστας", "Η λίστα δεν χρειάζεται αποθήκευση");
     }
@@ -557,7 +561,10 @@ public class Photos extends javax.swing.JFrame {
           ArrayList<FileRecord> listPhotos = Tools.getPhotosByList(list.id);
           bt_newListActionPerformed(null);
           printsPanel.addPhotos(listPhotos);
+          curListId = list.id;
           isCurListSaved = true;
+        } else if (evt.getPropertyName().equals(TreePanel.DELETED_LIST)) {
+          bt_newListActionPerformed(null);
         }
       }
     });

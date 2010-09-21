@@ -24,6 +24,7 @@ public class FileRecord extends Record {
   private int date = 0;
   public String inserted = "";
   public int album_id = 0;
+  public String album = "";
 
   public FileRecord(String path, Calendar created) {
     this.path = path;
