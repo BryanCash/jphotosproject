@@ -331,7 +331,7 @@ public class Photos extends javax.swing.JFrame {
 
     printsPanel.setBackground(new java.awt.Color(255, 255, 255));
     printsPanel.setFocusable(false);
-    printsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+    printsPanel.setLayout(new java.awt.FlowLayout());
     split_right.setRightComponent(printsPanel);
 
     split_top.setBackground(Skin.getSkinColor());
@@ -350,7 +350,7 @@ public class Photos extends javax.swing.JFrame {
     previewPanel.setLayout(previewPanelLayout);
     previewPanelLayout.setHorizontalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 169, Short.MAX_VALUE)
+      .addGap(0, 211, Short.MAX_VALUE)
     );
     previewPanelLayout.setVerticalGroup(
       previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
