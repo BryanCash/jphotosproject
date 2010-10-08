@@ -43,7 +43,7 @@ public class Database {
       Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:" + Options.USER_DIR + "/" + db + ".db");
       stmt = conn.createStatement();
-      String files = "CREATE TABLE `files` ( `id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL,`path` VARCHAR UNIQUE  NOT NULL ,`created` REAL,`year`INTEGER, `month` INTEGER, `date` INTEGER,`inserted` VARCHAR,`album_id` INTEGER DEFAULT 0)";
+      String files = "CREATE TABLE `files` ( `id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL,`path` VARCHAR UNIQUE  NOT NULL ,`created` REAL,`year`INTEGER, `month` INTEGER, `date` INTEGER,`inserted` VARCHAR,`album_id` INTEGER DEFAULT 0, `favorite` INTEGER DEFAULT 0)";
       stmt.executeUpdate(files);
       String albums ="CREATE  TABLE `albums` (`id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE , `album` VARCHAR)";
       stmt.executeUpdate(albums);

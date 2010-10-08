@@ -6,6 +6,7 @@ package jphotos.components;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import jphotos.database.FileRecord;
 import jphotos.panes.PreviewPanel;
 
 /**
@@ -31,9 +32,15 @@ public class PhotoButtonListener extends MouseAdapter {
       case PhotoButton.ROTATE_RIGHT:
         preview.rotate(PreviewPanel.ROTATE_RIGHT_DEGREES);
         break;
-      case  PhotoButton.PRINT:
+      case PhotoButton.PRINT:
         preview.addToList();
-          break;
+        break;
+      case PhotoButton.STAR_ADD:
+        preview.favorites(FileRecord.FAVORITE);
+        break;
+      case PhotoButton.STAR_REMOVE:
+        preview.favorites(FileRecord.NO_FAVORITE);
+        break;
     }
   }
 }

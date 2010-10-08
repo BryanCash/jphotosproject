@@ -15,6 +15,8 @@ import jphotos.tools.Tools;
  * @author lordovol
  */
 public class FileRecord extends Record {
+  public static final int NO_FAVORITE = 0;
+  public static final int FAVORITE = 1;
 
   public int id;
   public String path;
@@ -25,6 +27,7 @@ public class FileRecord extends Record {
   public String inserted = "";
   public int album_id = 0;
   public String album = "";
+  public int favorite = 0;
 
   public FileRecord(String path, Calendar created) {
     this.path = path;
@@ -39,11 +42,11 @@ public class FileRecord extends Record {
   public void save() {
     String sql;
     if (this.id == 0) {
-      sql = "INSERT INTO files (path,created,year,month,date,`inserted`,`album_id`) VALUES "
-              + "('" + this.path + "'," + this.created + "," + year + "," + month + ", " + date + ", '" + Tools.getNow() + "',"+this.album_id+" )";
+      sql = "INSERT INTO files (path,created,year,month,date,`inserted`,`album_id`,`favorite`) VALUES "
+              + "('" + this.path + "'," + this.created + "," + year + "," + month + ", " + date + ", '" + Tools.getNow() + "',"+this.album_id+"," + 0 + " )";
     } else {
       sql = "UPDATE files SET path = '" + this.path + "', created = " + this.created
-              + ", year =" + this.year + ", month = " + this.month + ", date = " + this.date + ", album_id ="+this.album_id +" WHERE id="+this.id;
+              + ", year =" + this.year + ", month = " + this.month + ", date = " + this.date + ", album_id ="+this.album_id +", favorite = " + this.favorite+ " WHERE id="+this.id;
     }
     int i = query(sql);
     if (i > 0) {

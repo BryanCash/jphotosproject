@@ -212,6 +212,7 @@ public class Tools {
         f.id = rs.getInt("id");
         f.album_id = rs.getInt("album_id");
         f.album = rs.getString("album");
+        f.favorite = rs.getInt("favorite");
         photos.add(f);
       }
       return photos;
@@ -487,6 +488,7 @@ public class Tools {
         f.id = rs.getInt("id");
         f.album = rs.getString("album");
         f.album_id = id;
+        f.favorite = rs.getInt("favorite");
         photos.add(f);
       }
       return photos;
@@ -507,6 +509,7 @@ public class Tools {
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
         f.id = rs.getInt("file_id");
+        f.favorite = rs.getInt("favorite");
         photos.add(f);
       }
       return photos;
