@@ -18,6 +18,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -45,6 +46,7 @@ public class PreviewPanel extends javax.swing.JPanel {
   public static final int ROTATE_LEFT_DEGREES = 270;
   public static final int ROTATE_RIGHT_DEGREES = 90;
   public static Font INFO_FONT = new Font(null, Font.BOLD, 16);
+  public static Font PLAIN_FONT = new Font(null, Font.PLAIN, 14);
   private BufferedImage image;
   private int orWidth;
   private int orHeight;
@@ -54,8 +56,7 @@ public class PreviewPanel extends javax.swing.JPanel {
   /** Creates new form PreviewPanel */
   public PreviewPanel() {
     initComponents();
-    addButtons();
-    setButtonsVisibility(false);
+
   }
 
   /** This method is called from within the constructor to
@@ -86,13 +87,10 @@ public class PreviewPanel extends javax.swing.JPanel {
       }
       Image im = image.getScaledInstance(w, h, Image.SCALE_DEFAULT);
       g.drawImage(im, 10, 10, im.getWidth(this), im.getHeight(this), Color.BLACK, this);
-      g.setFont(INFO_FONT);
-      g.setColor(Color.BLACK);
-      g.drawRect(15, getHeight()-34, 100, 16);
-      g.setColor(Color.WHITE);
-      g.fillRect(15, getHeight()-34, 100, 16);
-      g.setColor(Color.BLACK);
-      g.drawString(orWidth + "x"+orHeight, 20, getHeight()-20);
+      addText(g, INFO_FONT, Color.BLACK, new Rectangle(15, getHeight() - 34, 100, 16), Color.WHITE, orWidth + "x" + orHeight, 20, getHeight() - 20);
+      if (fileRecord.album != null) {
+        addText(g, PLAIN_FONT, Color.BLACK, new Rectangle(130, getHeight() - 34, 300, 16), Color.WHITE, fileRecord.album, 140, getHeight() - 20);
+      }
     }
   }
 
@@ -118,7 +116,7 @@ public class PreviewPanel extends javax.swing.JPanel {
                 new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED));
         image = op.filter(image, null);
       }
-      setButtonsVisibility(true);
+      addButtons();
       revalidate();
       repaint();
     } catch (IOException ex) {
@@ -131,14 +129,28 @@ public class PreviewPanel extends javax.swing.JPanel {
   }
 
   private void addButtons() {
-
+    Component[] comps = getComponents();
+    for (int i = 0; i < comps.length; i++) {
+      Component component = comps[i];
+      if (component instanceof PhotoButton) {
+        remove(component);
+      }
+    }
+    PhotoButton.buttons = 0;
     PhotoButton rotateLeft = new PhotoButton(PhotoButton.ROTATE_LEFT);
     add(rotateLeft);
     PhotoButton rotateRight = new PhotoButton(PhotoButton.ROTATE_RIGHT);
     add(rotateRight);
     PhotoButton print = new PhotoButton(PhotoButton.PRINT);
     add(print);
-    Component[] comps = getComponents();
+    if (fileRecord.favorite == FileRecord.NO_FAVORITE) {
+      PhotoButton star_add = new PhotoButton(PhotoButton.STAR_ADD);
+      add(star_add);
+    } else if (fileRecord.favorite == FileRecord.FAVORITE) {
+      PhotoButton star_remove = new PhotoButton(PhotoButton.STAR_REMOVE);
+      add(star_remove);
+    }
+    comps = getComponents();
     for (int i = 0; i < comps.length; i++) {
       Component component = comps[i];
       if (component instanceof PhotoButton) {
@@ -155,7 +167,6 @@ public class PreviewPanel extends javax.swing.JPanel {
       component.setVisible(vis);
     }
   }
-
 
   public void rotate(int currentAngle) {
     int j = image.getWidth();
@@ -183,11 +194,42 @@ public class PreviewPanel extends javax.swing.JPanel {
   }
 
   public void addToList() {
-   
+
     Photos p = (Photos) getTopLevelAncestor();
     p.printsPanel.addPhoto(fileRecord);
-    
 
+
+  }
+
+  /**
+   * Draws a text in the previe panel
+   * @param g The graphics
+   * @param font The font to use
+   * @param frontColor The color of the letters
+   * @param rectangle The rectangle to paint
+   * @param backColor The background color
+   * @param str The string to print
+   * @param xPos The x position of the string
+   * @param yPos The y position of the string
+   */
+  private void addText(Graphics g, Font font, Color frontColor, Rectangle rectangle, Color backColor, String str, int xPos, int yPos) {
+    g.setFont(font);
+    g.setColor(frontColor);
+    if (rectangle != null) {
+      g.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    }
+    g.setColor(backColor);
+    if (rectangle != null) {
+      g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    }
+    g.setColor(frontColor);
+    g.drawString(str, xPos, yPos);
+  }
+
+  public void favorites(int favorite) {
+    fileRecord.favorite = favorite;
+    fileRecord.save();
+    addButtons();
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   // End of variables declaration//GEN-END:variables
