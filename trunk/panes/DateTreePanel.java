@@ -45,14 +45,15 @@ public class DateTreePanel extends TreePanel{
   public void populate(int count) {
     try {
       String sql;
+      String where  = Photos.FAVORITES ? " WHERE favorite = 1 " : "";
       if(count ==0){
         count = 100000;
       sql = "SELECT year , month ,date, count(*)  as count "
-              + "FROM files group by year,month,date  "
+              + "FROM files " +  where + " group by year,month,date  "
               + "ORDER BY year desc, month, date ";
       } else {
        sql = "SELECT year , month ,date, count(*)  as count "
-              + "FROM files group by year,month,date  "
+              + "FROM files " +  where + " group by year,month,date  "
               + "ORDER BY inserted desc,  year desc, month, date ";
       }
       ResultSet rs = Database.stmt.executeQuery(sql);

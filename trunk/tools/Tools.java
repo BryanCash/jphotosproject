@@ -201,8 +201,9 @@ public class Tools {
   public static ArrayList<FileRecord> getPhotosByDate(TreeDate date) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
     try {
+      String favWhere =  Photos.FAVORITES ? " AND favorite = 1 " : "";
       String sql = "Select files.*, albums.album AS album  from files LEFT JOIN albums ON albums.id = files.album_id WHERE year = " + date.year
-              + " AND month = " + date.month + " AND date = " + date.date
+              + " AND month = " + date.month + " AND date = " + date.date + favWhere
               + " ORDER BY created DESC";
       ResultSet rs = Database.stmt.executeQuery(sql);
       while (rs.next()) {

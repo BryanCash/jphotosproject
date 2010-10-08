@@ -64,6 +64,7 @@ public class Photos extends javax.swing.JFrame {
   public static boolean isCurListSaved = false;
   public static int curListId = 0;
   private int mainSplitPosition;
+  public static boolean FAVORITES;
 
   /** Creates new form photos */
   public Photos() {
@@ -136,6 +137,7 @@ public class Photos extends javax.swing.JFrame {
     sp_count = new javax.swing.JSpinner();
     bt_album = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
+    tb_star = new javax.swing.JToggleButton();
     jSeparator4 = new javax.swing.JToolBar.Separator();
     bt_newList = new javax.swing.JButton();
     bt_saveList = new javax.swing.JButton();
@@ -264,6 +266,18 @@ public class Photos extends javax.swing.JFrame {
       }
     });
     toolbar.add(jButton2);
+
+    tb_star.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jphotos/images/star.png"))); // NOI18N
+    tb_star.setToolTipText("Μόνο αγαπημένα");
+    tb_star.setFocusable(false);
+    tb_star.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    tb_star.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    tb_star.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        tb_starActionPerformed(evt);
+      }
+    });
+    toolbar.add(tb_star);
     toolbar.add(jSeparator4);
 
     bt_newList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jphotos/images/new.png"))); // NOI18N
@@ -597,6 +611,11 @@ public class Photos extends javax.swing.JFrame {
     addTreeListener(list);
   }//GEN-LAST:event_jButton2ActionPerformed
 
+  private void tb_starActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tb_starActionPerformed
+    FAVORITES = tb_star.isSelected();
+    Bt_allPhotosActionPerformed(evt);
+  }//GEN-LAST:event_tb_starActionPerformed
+
   private class MyDispatcher implements KeyEventDispatcher {
 
     @Override
@@ -665,6 +684,7 @@ public class Photos extends javax.swing.JFrame {
   public javax.swing.JSplitPane split_main;
   public javax.swing.JSplitPane split_right;
   public javax.swing.JSplitPane split_top;
+  public javax.swing.JToggleButton tb_star;
   public javax.swing.JToolBar toolbar;
   public jphotos.panes.DateTreePanel tree;
   // End of variables declaration//GEN-END:variables
