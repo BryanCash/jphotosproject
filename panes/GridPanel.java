@@ -88,7 +88,7 @@ public class GridPanel extends javax.swing.JPanel {
       Thread t = new Thread(p);
       t.start();
       count++;
-     }
+    }
     revalidate();
     repaint();
   }
@@ -114,7 +114,35 @@ public class GridPanel extends javax.swing.JPanel {
       }
     });
     south.add(addToAlbum);
+
+    ImageIcon favIcon = new ImageIcon(getClass().getResource("/jphotos/images/fav_icon.png"));
+    final JButton addToFav = new JButton(favIcon);
+    addToFav.setToolTipText("Προσθήκη στα αγαπημένα");
+    addToFav.addActionListener(new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        addToFav();
+      }
+    });
+    south.add(addToFav);
+
     add(south, BorderLayout.SOUTH);
+  }
+
+  private void addToFav() {
+    ArrayList<PhotoPanel> photos = new ArrayList<PhotoPanel>();
+    Component[] comps = photoPanel.getComponents();
+    for (int i = 0; i < comps.length; i++) {
+      Component comp = comps[i];
+      if (comp instanceof PhotoPanel) {
+        PhotoPanel p = (PhotoPanel) comp;
+        if (p.check.isSelected()) {
+          p.fileRecord.favorite = FileRecord.FAVORITE;
+          p.fileRecord.save();
+        }
+      }
+    }
+   
   }
 
   private void addToAlbum() {
