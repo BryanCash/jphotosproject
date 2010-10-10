@@ -19,10 +19,11 @@ public class PhotoButton extends JButton {
   public static final int PRINT = 2;
   public static final int STAR_ADD = 3;
   public static final int STAR_REMOVE = 4;
+  public static final int TAG = 5;
 
-  public static String[] icons = {"rotate_left","rotate_right","add","star_add","star_remove"};
+  public static String[] icons = {"rotate_left","rotate_right","add","star_add","star_remove","tag"};
   public static String[] tooltips = {"Περιστροφή προς τα αριστερά","Περιστροφή προς τα δεξιά","Προσθήκη στη λίστα",
-  "Προσθήκη στα αγαπημένα","Αφίρεση από αγαπημένα"};
+  "Προσθήκη στα αγαπημένα","Αφαίρεση από αγαπημένα","Προσθήκη ταμπέλας"};
   public static int buttons=0;
   public int type;
 

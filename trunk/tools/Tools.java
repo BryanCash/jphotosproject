@@ -201,7 +201,7 @@ public class Tools {
   public static ArrayList<FileRecord> getPhotosByDate(TreeDate date) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
     try {
-      String favWhere =  Photos.FAVORITES ? " AND favorite = 1 " : "";
+      String favWhere = Photos.FAVORITES ? " AND favorite = 1 " : "";
       String sql = "Select files.*, albums.album AS album  from files LEFT JOIN albums ON albums.id = files.album_id WHERE year = " + date.year
               + " AND month = " + date.month + " AND date = " + date.date + favWhere
               + " ORDER BY created DESC";
@@ -491,7 +491,7 @@ public class Tools {
         Calendar cal = Calendar.getInstance();
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
-         f.id = rs.getInt("id");
+        f.id = rs.getInt("id");
         f.year = rs.getInt("year");
         f.month = rs.getInt("month");
         f.date = rs.getInt("date");
@@ -511,9 +511,13 @@ public class Tools {
 
   public static ArrayList<FileRecord> getPhotosByList(int id) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
- try {
-      String sql = "SELECT files.*, files.id AS file_id, files.path, files.year,files.month,files.date, lists.id FROM files JOIN prints ON "
-              + "prints.file_id = files.id JOIN lists ON lists.id = prints.list_id WHERE lists.id = " + id;
+    try {
+      String sql = "SELECT files.*, files.id AS file_id, lists.id, albums.album FROM files "
+              + "JOIN prints ON prints.file_id = files.id "
+              + "JOIN lists ON lists.id = prints.list_id "
+              + "LEFT JOIN albums ON files.album_id  = albums.id "
+              + "WHERE lists.id = " + id;
+      System.out.println(sql);
       ResultSet rs = Database.stmt.executeQuery(sql);
       while (rs.next()) {
         Calendar cal = Calendar.getInstance();
@@ -534,6 +538,36 @@ public class Tools {
     } catch (SQLException ex) {
       Photos.logger.log(Level.SEVERE, null, ex);
       return photos;
+    }
+  }
+
+  public static String implode(ArrayList<String> tags, String del) {
+    String imp = "";
+    for (Iterator<String> it = tags.iterator(); it.hasNext();) {
+      String string = it.next();
+      imp += string+del;
+    }
+    return imp;
+  }
+
+  public static int getTagId(String tag) {
+    try {
+      String sql = "SELECT id FROM tags WHERE tag = '" + tag + "'";
+      ResultSet rs = Database.stmt.executeQuery(sql);
+      while (rs.next()) {
+        return rs.getInt("id");
+      }
+      sql = "INSERT INTO tags (tag) VALUES ('"+tag+"')";
+      Database.stmt.executeUpdate(sql);
+      rs = Database.stmt.executeQuery("SELECT last_insert_rowid() AS id");
+      if (rs.next()) {
+        return rs.getInt("id");
+      } else {
+        return  -1;
+      }
+    } catch (SQLException ex) {
+      Photos.logger.log(Level.SEVERE, null, ex);
+      return -1;
     }
   }
 

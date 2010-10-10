@@ -160,6 +160,8 @@ public class PreviewPanel extends javax.swing.JPanel {
       PhotoButton star_remove = new PhotoButton(PhotoButton.STAR_REMOVE);
       add(star_remove);
     }
+    PhotoButton tag = new PhotoButton(PhotoButton.TAG);
+    add(tag);
     comps = getComponents();
     for (int i = 0; i < comps.length; i++) {
       Component component = comps[i];
@@ -270,6 +272,10 @@ public class PreviewPanel extends javax.swing.JPanel {
     fileRecord.favorite = favorite;
     fileRecord.save();
     addButtons();
+  }
+
+  public void tag() {
+    Tagger tagger = new Tagger(fileRecord);
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   // End of variables declaration//GEN-END:variables
