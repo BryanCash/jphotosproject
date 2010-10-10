@@ -53,6 +53,10 @@ public class Database {
       stmt.executeUpdate(prints);
       String lists = "CREATE TABLE `lists` (`id` INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , `date` VARCHAR)";
       stmt.executeUpdate(lists);
+      String tags = "CREATE TABLE `tags` (`id` INTEGER PRIMARY KEY , `tag` VARCHAR)";
+      stmt.execute(tags);
+      String filetags = "CREATE TABLE `filetags` (`file_id` INTEGER, `tag_id` INTEGER)";
+      stmt.execute(filetags);
       String options = "CREATE TABLE `options` (`root` VARCHAR)";
       stmt.executeUpdate(options);
       String ins = "INSERT INTO `options` (`root`) VALUES ('') ";

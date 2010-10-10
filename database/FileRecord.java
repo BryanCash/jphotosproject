@@ -5,8 +5,12 @@
 package jphotos.database;
 
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import jphotos.Photos;
 import jphotos.tools.Tools;
 
@@ -64,5 +68,21 @@ public class FileRecord extends Record {
 
   public String getDate() {
     return date + "/" + month + "/" + year;
+  }
+
+  public ArrayList<String> getTags() {
+    ArrayList<String> tags = new ArrayList<String>();
+    try {
+
+      String sql = "SELECT tag from filetags JOIN tags ON tag_id = tags.id WHERE file_id = " + this.id;
+      ResultSet rs = Database.stmt.executeQuery(sql);
+      while (rs.next()) {
+        tags.add(rs.getString("tag"));
+      }
+      return tags;
+    } catch (SQLException ex) {
+      Photos.logger.log(Level.SEVERE, null, ex);
+      return tags;
+    }
   }
 }

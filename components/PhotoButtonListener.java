@@ -41,6 +41,9 @@ public class PhotoButtonListener extends MouseAdapter {
       case PhotoButton.STAR_REMOVE:
         preview.favorites(FileRecord.NO_FAVORITE);
         break;
+      case PhotoButton.TAG:
+        preview.tag();
+        break;
     }
   }
 }
