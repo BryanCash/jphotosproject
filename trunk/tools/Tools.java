@@ -211,9 +211,14 @@ public class Tools {
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
         f.id = rs.getInt("id");
+        f.year = rs.getInt("year");
+        f.month = rs.getInt("month");
+        f.date = rs.getInt("date");
         f.album_id = rs.getInt("album_id");
+        f.path = rs.getString("path");
         f.album = rs.getString("album");
         f.favorite = rs.getInt("favorite");
+        f.inserted = rs.getString("inserted");
         photos.add(f);
       }
       return photos;
@@ -486,10 +491,15 @@ public class Tools {
         Calendar cal = Calendar.getInstance();
         cal.set(rs.getInt("year"), rs.getInt("month") - 1, rs.getInt("date"));
         FileRecord f = new FileRecord(rs.getString("path"), cal);
-        f.id = rs.getInt("id");
+         f.id = rs.getInt("id");
+        f.year = rs.getInt("year");
+        f.month = rs.getInt("month");
+        f.date = rs.getInt("date");
+        f.album_id = rs.getInt("album_id");
+        f.path = rs.getString("path");
         f.album = rs.getString("album");
-        f.album_id = id;
         f.favorite = rs.getInt("favorite");
+        f.inserted = rs.getString("inserted");
         photos.add(f);
       }
       return photos;
@@ -502,7 +512,7 @@ public class Tools {
   public static ArrayList<FileRecord> getPhotosByList(int id) {
     ArrayList<FileRecord> photos = new ArrayList<FileRecord>();
  try {
-      String sql = "SELECT  files.id AS file_id, files.path, files.year,files.month,files.date, lists.id FROM files JOIN prints ON "
+      String sql = "SELECT files.*, files.id AS file_id, files.path, files.year,files.month,files.date, lists.id FROM files JOIN prints ON "
               + "prints.file_id = files.id JOIN lists ON lists.id = prints.list_id WHERE lists.id = " + id;
       ResultSet rs = Database.stmt.executeQuery(sql);
       while (rs.next()) {
@@ -511,6 +521,13 @@ public class Tools {
         FileRecord f = new FileRecord(rs.getString("path"), cal);
         f.id = rs.getInt("file_id");
         f.favorite = rs.getInt("favorite");
+        f.year = rs.getInt("year");
+        f.month = rs.getInt("month");
+        f.date = rs.getInt("date");
+        f.album_id = rs.getInt("album_id");
+        f.path = rs.getString("path");
+        f.album = rs.getString("album");
+        f.inserted = rs.getString("inserted");
         photos.add(f);
       }
       return photos;

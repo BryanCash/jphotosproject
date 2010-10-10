@@ -17,9 +17,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -52,6 +55,7 @@ public class PreviewPanel extends javax.swing.JPanel {
   private int orHeight;
   public static final double RATIO = 0.5;
   private FileRecord fileRecord;
+  private int currentX = 20;
 
   /** Creates new form PreviewPanel */
   public PreviewPanel() {
@@ -87,9 +91,15 @@ public class PreviewPanel extends javax.swing.JPanel {
       }
       Image im = image.getScaledInstance(w, h, Image.SCALE_DEFAULT);
       g.drawImage(im, 10, 10, im.getWidth(this), im.getHeight(this), Color.BLACK, this);
-      addText(g, INFO_FONT, Color.BLACK, new Rectangle(15, getHeight() - 34, 100, 16), Color.WHITE, orWidth + "x" + orHeight, 20, getHeight() - 20);
+//      addText(g, INFO_FONT, Color.BLACK, new Rectangle(15, getHeight() - 34, 100, 16), Color.WHITE, orWidth + "x" + orHeight, 20, getHeight() - 20);
+//      addText(g, PLAIN_FONT, Color.BLACK, new Rectangle(150, getHeight() - 34, 100, 16), Color.WHITE, fileRecord.getDate(), 155, getHeight() - 20);
+//      if (fileRecord.album != null) {
+//        addText(g, PLAIN_FONT, Color.BLACK, new Rectangle(295, getHeight() - 34, 300, 16), Color.WHITE, fileRecord.album, 300, getHeight() - 20);
+//      }
+      int x = drawText(g, orWidth + "x" + orHeight, 20);
+      x = drawText(g, fileRecord.getDate(),x+20);
       if (fileRecord.album != null) {
-        addText(g, PLAIN_FONT, Color.BLACK, new Rectangle(130, getHeight() - 34, 300, 16), Color.WHITE, fileRecord.album, 140, getHeight() - 20);
+         x = drawText(g, fileRecord.album,x+20);
       }
     }
   }
@@ -224,6 +234,36 @@ public class PreviewPanel extends javax.swing.JPanel {
     }
     g.setColor(frontColor);
     g.drawString(str, xPos, yPos);
+  }
+
+  private int  drawText(Graphics g, String s, int xPos) {
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
+    FontRenderContext frc = g2.getFontRenderContext();
+    Font font = g2.getFont().deriveFont(16f);
+    g2.setFont(font);
+    float stringWidth = (float) font.getStringBounds(s, frc).getWidth();
+    LineMetrics lm = font.getLineMetrics(s, frc);
+    float stringHeight = lm.getAscent() + lm.getDescent();
+    g2.setPaint(Color.WHITE);
+    Rectangle rectangle = new Rectangle();
+    rectangle.setBounds(xPos + 40, getHeight() - 40, (int) stringWidth+20, 20);
+    g2.fill(rectangle);
+    g2.setPaint(Color.black);
+    g2.draw(rectangle);
+
+    // scale text to fit and center in r
+//    double xScale = rectangle.width / (stringWidth);
+//    double yScale = rectangle.height / (stringHeight);
+//    double x = rectangle.x + xScale * (rectangle.width - xScale * stringWidth) / 2;
+//    double y = rectangle.getMaxY() - yScale * lm.getDescent();
+//    AffineTransform at =
+//            AffineTransform.getTranslateInstance(x, y);
+//    at.scale(xScale, yScale);
+   // g2.setFont(font.deriveFont(16));
+    g2.drawString(s, xPos + 50,getHeight()-24);
+    return (int)stringWidth + xPos;
   }
 
   public void favorites(int favorite) {
