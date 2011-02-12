@@ -156,11 +156,15 @@ public class PhotoPanel extends javax.swing.JPanel implements Runnable {
 
   public void run() {
     try {
+      File photo = new File(fileRecord.path);
+      if(!photo.exists()){
+        return;
+      }
       label_photo.setToolTipText(fileRecord.toString());
       label_album.setText(fileRecord.album);
       label_album.setBorder(BorderFactory.createLineBorder(Color.BLACK));
       JpegImageParser parser = new JpegImageParser();
-      ByteSourceFile bytesource = new ByteSourceFile(new File(fileRecord.path));
+      ByteSourceFile bytesource = new ByteSourceFile(photo);
       HashMap params = new HashMap();
       TiffImageMetadata d = parser.getExifMetadata(bytesource, params);
       TiffDirectory dir = d.findDirectory(TiffImageMetadata.DIRECTORY_TYPE_SUB);

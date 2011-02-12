@@ -264,20 +264,26 @@ public class Tools {
 
   public static int getPathFileCount(String path) {
     File dir = new File(path);
-    return dir.listFiles(new ImageFileFilter()).length;
+    if (dir.exists()) {
+      return dir.listFiles(new ImageFileFilter()).length;
+    }
+    return 0;
   }
 
   public static int getPathSubdirCount(String path) {
     int dirs = 0;
     File dir = new File(path);
-    File[] files = dir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
-      if (file.isDirectory()) {
-        dirs++;
+    if (dir.exists()) {
+      File[] files = dir.listFiles();
+      for (int i = 0; i < files.length; i++) {
+        File file = files[i];
+        if (file.isDirectory()) {
+          dirs++;
+        }
       }
     }
     return dirs;
+
   }
 
   public static File[] getNewSubdirs(String path) {
@@ -305,13 +311,17 @@ public class Tools {
   }
 
   public static File[] getNewFiles(String path) {
-    File[] files = new File(path).listFiles(new ImageFileFilter());
-    for (int i = 0; i < files.length; i++) {
-      File file = files[i];
-      if (isFileInDatabase(file)) {
-        files[i] = null;
+    if (new File(path).exists()) {
+      File[] files = new File(path).listFiles(new ImageFileFilter());
+      for (int i = 0; i < files.length; i++) {
+        File file = files[i];
+        if (isFileInDatabase(file)) {
+          files[i] = null;
+        }
       }
+      return files;
     }
+    File[] files = new File[0];
     return files;
   }
 
@@ -545,7 +555,7 @@ public class Tools {
     String imp = "";
     for (Iterator<String> it = tags.iterator(); it.hasNext();) {
       String string = it.next();
-      imp += string+del;
+      imp += string + del;
     }
     return imp;
   }
@@ -557,13 +567,13 @@ public class Tools {
       while (rs.next()) {
         return rs.getInt("id");
       }
-      sql = "INSERT INTO tags (tag) VALUES ('"+tag+"')";
+      sql = "INSERT INTO tags (tag) VALUES ('" + tag + "')";
       Database.stmt.executeUpdate(sql);
       rs = Database.stmt.executeQuery("SELECT last_insert_rowid() AS id");
       if (rs.next()) {
         return rs.getInt("id");
       } else {
-        return  -1;
+        return -1;
       }
     } catch (SQLException ex) {
       Photos.logger.log(Level.SEVERE, null, ex);

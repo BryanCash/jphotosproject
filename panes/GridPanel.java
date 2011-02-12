@@ -126,7 +126,22 @@ public class GridPanel extends javax.swing.JPanel {
     });
     south.add(addToFav);
 
+    ImageIcon tagIcon = new ImageIcon(getClass().getResource("/jphotos/images/tag_icon.png"));
+    final JButton addTag = new JButton(tagIcon);
+    addTag.setToolTipText("Προσθήκη ταμπέλας");
+    addTag.addActionListener(new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        addTag();
+      }
+    });
+    south.add(addTag);
+
     add(south, BorderLayout.SOUTH);
+  }
+
+  private void addTag(){
+    
   }
 
   private void addToFav() {
